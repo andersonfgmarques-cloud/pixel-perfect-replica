@@ -53,6 +53,16 @@ jobs:
               for old, new in replacements.items():
                   html = html.replace(old, new)
               page.write_text(html)
+
+          # TanStack Start also emits absolute asset URLs inside JavaScript chunks.
+          # Rewrite those root-relative references for the GitHub Pages subpath.
+          for bundle in root.rglob("*.js"):
+              js = bundle.read_text()
+              js = js.replace('" /assets/', '"/pixel-perfect-replica/assets/')
+              js = js.replace('"/assets/', '"/pixel-perfect-replica/assets/')
+              js = js.replace("'/assets/", "'/pixel-perfect-replica/assets/")
+              js = js.replace("`/assets/", "`/pixel-perfect-replica/assets/")
+              bundle.write_text(js)
           PY
 
       - name: Upload Pages artifact
