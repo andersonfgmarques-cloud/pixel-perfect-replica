@@ -36,6 +36,23 @@ jobs:
         run: |
           test -f .output/public/index.html
           cp .output/public/index.html .output/public/404.html
+      - name: Fix asset paths for project Pages URL
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path(".output/public")
+          replacements = {
+              '="/assets/': '="/pixel-perfect-replica/assets/',
+              '="/manifest.webmanifest': '="/pixel-perfect-replica/manifest.webmanifest',
+              '="/icon-512.png': '="/pixel-perfect-replica/icon-512.png',
+              '="/favicon.png': '="/pixel-perfect-replica/favicon.png',
+          }
+          for page in root.rglob("*.html"):
+              html = page.read_text()
+              for old, new in replacements.items():
+                  html = html.replace(old, new)
+              page.write_text(html)
+          PY
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
