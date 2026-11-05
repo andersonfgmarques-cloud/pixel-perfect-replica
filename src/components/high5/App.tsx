@@ -3,6 +3,7 @@ import {
   Volume2, Home, BookOpen, Gamepad2, BarChart3, Heart, Mic, Check, X, Flame, Star, ArrowLeft, Search, Plus, Bell, RotateCcw,
 } from "lucide-react";
 import { WORDS, CATEGORIES, LANGS, LANG_NAMES, LEVEL_ORDER, wordById, type Word, type Level, type Lang } from "@/lib/words";
+import { FREQUENCY_TRANSLATIONS } from "@/lib/frequency-translations";
 import {
   useStore, setState, DAILY_LIMIT, dueWords, suggestNew, remainingToday, markLearned, recordResult, bumpStreak,
   toggleFav, isHard, useSpeak, shuffle, type State,
@@ -461,17 +462,17 @@ function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord;
   const kind = item.pos.toLowerCase();
   const icon = kind.includes("pronoun") ? "👤" : kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬" : kind.includes("preposition") ? "📍" : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
   const knownWord = WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase());
+  const curated = FREQUENCY_TRANSLATIONS[item.r]?.[s.lang];
   const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
-  const examplePt = item.w.toLowerCase() === "you" ? "Posso ajudar você?" : "";
-  const ptMeaning = item.w.toLowerCase() === "you" ? "você · te · vocês" : (knownWord ? knownWord.tr["pt-BR"] : "");
+  const exampleTranslation = curated?.example ?? "";
+  const meaningTranslation = curated?.meaning ?? knownWord?.tr[s.lang] ?? "";
   const speakExample = () => { if (!example || typeof window === "undefined") return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(example); utterance.lang = s.accent; window.speechSynthesis.speak(utterance); };
   return (<div><Header title={item.w} back={back} /><div className="space-y-4 px-5 text-center">
     <div className="rounded-[2rem] bg-card p-8 shadow-soft"><div className="flex min-h-32 items-center justify-center"><span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span></div></div>
     <div className="flex justify-center gap-3"><SpeakBtn s={s} text={item.w} /><button onClick={() => toggleFav("frequency-" + item.r)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={"h-5 w-5 " + (fav ? "fill-accent text-accent" : "")} /></button></div>
     <p className="text-sm text-muted-foreground">{item.pos}{item.ipa ? " · " + item.ipa : ""}</p>
-    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={speakExample} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{examplePt && <p className="mt-1 text-sm not-italic text-muted-foreground">{examplePt}</p>}</div>}
-    {ptMeaning && <div className="grid grid-cols-2 gap-2 text-left"><div className="rounded-xl bg-secondary p-3"><p className="text-xs text-muted-foreground">Português (Brasil)</p><p className="font-semibold">{ptMeaning}</p></div></div>}
-    {knownWord && <div className="grid grid-cols-2 gap-2 text-left">{LANGS.filter((language) => language !== "pt-BR").map((language) => <div key={language} className="rounded-xl bg-card p-3"><p className="text-xs text-muted-foreground">{LANG_NAMES[language]}</p><p className="font-semibold">{knownWord.tr[language]}</p></div>)}</div>}
+    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={speakExample} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{exampleTranslation && <p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
+    {meaningTranslation && <div className="grid grid-cols-2 gap-2 text-left"><div className="rounded-xl bg-secondary p-3"><p className="text-xs text-muted-foreground">{LANG_NAMES[s.lang]}</p><p className="font-semibold">{meaningTranslation}</p></div></div>}
   </div></div>);
 }
 function WordDetail({ s, id, back }: { s: State; id: string; back: () => void }) {
