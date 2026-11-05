@@ -445,10 +445,14 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
                     </span>
                     <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
                   </summary>
-                  <div className="mx-3 space-y-2 border-t px-1 py-3 text-sm">
-                    <p className="text-xs font-semibold text-muted-foreground">{item.pos}{item.ipa ? ` · ${item.ipa}` : ""}</p>
+                  <div className="mx-3 space-y-3 border-t px-1 py-3 text-sm">
+                    <div className="flex items-center justify-center gap-3">
+                      <SpeakBtn s={s} text={item.w} />
+                      {item.ipa && <span className="font-medium text-muted-foreground">{item.ipa}</span>}
+                    </div>
+                    <p className="text-center text-xs font-semibold text-muted-foreground">{item.pos}</p>
                     {item.meaning && <p><span className="font-semibold">Meaning:</span> {item.meaning}</p>}
-                    {item.example && <p className="rounded-2xl bg-muted px-4 py-3 italic">“{item.example}”</p>}
+                    {item.example && <button onClick={() => { const utterance = new SpeechSynthesisUtterance(item.example); utterance.lang = s.accent; window.speechSynthesis.speak(utterance); }} className="w-full rounded-2xl bg-muted px-4 py-3 text-left italic">“{item.example}” <Volume2 className="inline h-4 w-4" /></button>}
                     {item.lemma && <p className="text-xs text-muted-foreground">Lemma: {item.lemma}</p>}
                   </div>
                 </details>;
