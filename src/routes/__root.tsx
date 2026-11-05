@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 
-const publicUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+const publicUrl = (path: string) => `/pixel-perfect-replica/${path}`;
 
 function NotFoundComponent() {
   return (
