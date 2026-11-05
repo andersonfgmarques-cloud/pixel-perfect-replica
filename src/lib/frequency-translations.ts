@@ -5,7 +5,7 @@ export type FrequencyTranslation = {
   example: string;
 };
 
-export type FrequencyTranslationEntry = Partial<Record<Lang, FrequencyTranslation>>;
+export type FrequencyTranslationEntry = Partial<Record<Lang | "it", FrequencyTranslation>>;
 
 /**
  * Curated translations for the frequency dictionary.
@@ -50,6 +50,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
       meaning: "bạn; các bạn — đại từ dùng để gọi người đang giao tiếp với mình",
       example: "Tôi có thể giúp bạn không?",
     },
+    it: { meaning: "tu; Lei; voi — pronome usato per rivolgersi alla persona o alle persone con cui si parla", example: "Posso aiutarti?" },
   },
   2: {
     "pt-BR": { meaning: "eu — pronome que identifica quem fala ou escreve como sujeito da frase", example: "Eu levei minha irmã e a mim mesma de carro até a escola." },
@@ -61,6 +62,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "ben — konuşan veya yazan kişiyi cümlenin öznesi olarak belirten zamir", example: "Kız kardeşimi ve kendimi arabayla okula götürdüm." },
     id: { meaning: "saya; aku — kata ganti orang yang berbicara atau menulis sebagai subjek kalimat", example: "Saya mengantar saudara perempuan saya dan diri saya sendiri ke sekolah dengan mobil." },
     vi: { meaning: "tôi; mình — đại từ chỉ người đang nói hoặc viết khi làm chủ ngữ", example: "Tôi lái xe đưa chị/em gái và bản thân mình đến trường." }
+    it: { meaning: "io — pronome che indica chi parla o scrive quando svolge la funzione di soggetto", example: "Ho accompagnato mia sorella e me stesso a scuola in macchina." },
   },
   3: {
     "pt-BR": { meaning: "ser; estar — verbo auxiliar usado com o particípio passado para formar a voz passiva", example: "Ele se foi." },
@@ -72,6 +74,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "olmak — edilgen çatıyı oluşturmak için fiillerin geçmiş zaman ortacıyla kullanılan yardımcı fiil", example: "O gitmiş." },
     id: { meaning: "adalah; menjadi — kata kerja bantu yang digunakan bersama past participle untuk membentuk kalimat pasif", example: "Dia sudah pergi." },
     vi: { meaning: "là; thì; được — trợ động từ dùng với quá khứ phân từ để tạo câu bị động", example: "Anh ấy đã đi rồi." }
+    it: { meaning: "essere — verbo ausiliare usato con il participio passato per formare la forma passiva", example: "Se n'è andato." },
   },
   4: {
     "pt-BR": { meaning: "o; a; os; as — artigo definido usado quando o referente é específico ou já é conhecido", example: "Que vença o melhor!" },
@@ -83,6 +86,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "belirli tanımlık — ismin belirli veya bilinen bir varlığı ifade ettiğini gösterir; Türkçede ayrı bir artikel yoktur", example: "En iyi olan kazansın!" },
     id: { meaning: "kata sandang tertentu — menandai nomina yang sudah jelas atau dapat dikenali; bahasa Indonesia tidak memiliki artikel tertentu yang setara", example: "Semoga yang terbaik menang!" },
     vi: { meaning: "mạo từ xác định — cho biết danh từ chỉ đối tượng cụ thể hoặc đã được nhắc đến; tiếng Việt không có mạo từ tương đương trực tiếp", example: "Mong người giỏi nhất sẽ thắng!" }
+    it: { meaning: "il; lo; la; i; gli; le — articolo determinativo che indica qualcosa di specifico o già noto", example: "Che vinca il migliore!" },
   },
   5: {
     "pt-BR": { meaning: "para; a — preposição que indica direção ou destino", example: "Quero ir embora." },
@@ -94,6 +98,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "-e/-a; -e doğru — yön veya varış noktası bildiren edat", example: "Gitmek istiyorum." },
     id: { meaning: "ke; menuju — kata depan yang menunjukkan arah atau tujuan", example: "Saya ingin pergi." },
     vi: { meaning: "đến; về phía — giới từ chỉ hướng đi hoặc đích đến", example: "Tôi muốn rời đi." }
+    it: { meaning: "a; verso — preposizione che indica direzione o destinazione", example: "Voglio andare via." },
   },
   6: {
     "pt-BR": { meaning: "um; uma — artigo indefinido que apresenta um exemplo não especificado", example: "Eles são farinha do mesmo saco." },
@@ -105,6 +110,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "belirsiz tanımlık — belirli olmayan bir örneği ifade eder; Türkçede çoğunlukla “bir” ile karşılanır", example: "Onlar birbirinin aynısı." },
     id: { meaning: "artikel tak tentu — memperkenalkan sesuatu yang belum ditentukan; sering setara dengan “sebuah” atau “seorang”", example: "Mereka sangat mirip." },
     vi: { meaning: "mạo từ không xác định — giới thiệu một đối tượng chưa xác định; tiếng Việt thường dùng “một” tùy ngữ cảnh", example: "Họ giống nhau như đúc." }
+    it: { meaning: "un; uno; una — articolo indeterminativo che introduce un elemento non specificato", example: "Sono due della stessa pasta." },
   },
   7: {
     "pt-BR": { meaning: "ele; ela; isso — pronome neutro da terceira pessoa para objetos, ideias ou seres não humanos", example: "São 10h45." },
@@ -116,6 +122,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "o — cansız varlıklar, kavramlar veya insan dışındaki canlılar için üçüncü tekil kişi zamiri", example: "Saat 10.45." },
     id: { meaning: "itu; -nya — kata ganti orang ketiga untuk benda, gagasan, atau makhluk bukan manusia", example: "Sekarang pukul 10.45." },
     vi: { meaning: "nó; điều đó — đại từ ngôi thứ ba dùng cho đồ vật, ý niệm hoặc sinh vật không phải con người", example: "Bây giờ là 10 giờ 45." }
+    it: { meaning: "esso; essa; ciò — pronome di terza persona usato per oggetti, idee o esseri non umani", example: "Sono le 10:45." },
   },
   8: {
     "pt-BR": { meaning: "e — conjunção usada para ligar palavras ou grupos de palavras", example: "Dois mais dois são quatro." },
@@ -127,6 +134,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "ve — sözcükleri veya sözcük gruplarını birbirine bağlayan bağlaç", example: "İki artı iki dört eder." },
     id: { meaning: "dan — kata penghubung untuk menggabungkan kata atau frasa", example: "Dua ditambah dua sama dengan empat." },
     vi: { meaning: "và — liên từ dùng để nối các từ hoặc cụm từ", example: "Hai cộng hai bằng bốn." }
+    it: { meaning: "e — congiunzione che collega parole o gruppi di parole", example: "Due più due fa quattro." },
   },
   9: {
     "pt-BR": { meaning: "que — conjunção que introduz uma oração que funciona como complemento de um verbo", example: "Insisto que você venha." },
@@ -138,6 +146,7 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "ki — bir fiilin nesnesi olan yan cümleyi başlatan bağlaç", example: "Gelmen konusunda ısrar ediyorum." },
     id: { meaning: "bahwa — kata penghubung yang memperkenalkan klausa pelengkap setelah kata kerja", example: "Saya bersikeras agar kamu datang." },
     vi: { meaning: "rằng — từ nối mở đầu mệnh đề bổ sung ý cho động từ", example: "Tôi khăng khăng rằng bạn phải đến." }
+    it: { meaning: "che — congiunzione che introduce una proposizione subordinata completiva", example: "Insisto perché tu venga." },
   },
   10: {
     "pt-BR": { meaning: "desde; de — preposição que indica origem ou ponto inicial no tempo", example: "Que absurdo!" },
@@ -149,5 +158,6 @@ export const FREQUENCY_TRANSLATIONS: Record<number, FrequencyTranslationEntry> =
     tr: { meaning: "-den/-dan; -den beri — kaynak veya başlangıç zamanını belirten edat", example: "Ne saçmalık!" },
     id: { meaning: "dari; sejak — kata depan yang menunjukkan asal atau titik awal waktu", example: "Omong kosong sekali!" },
     vi: { meaning: "từ — giới từ chỉ nguồn gốc hoặc thời điểm bắt đầu", example: "Thật là vô lý!" }
+    it: { meaning: "da; da quando — preposizione che indica origine o punto iniziale nel tempo", example: "Che assurdità!" },
   },
 };
