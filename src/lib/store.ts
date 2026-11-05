@@ -25,7 +25,7 @@ const KEY = "high5-state-v1";
 export const today = (t = Date.now()) => new Date(t).toISOString().slice(0, 10);
 
 const initial: State = {
-  onboarded: false, lang: "es", level: "Beginner", accent: "en-US", cards: {},
+  onboarded: false, lang: "pt-BR", level: "Beginner", accent: "en-US", cards: {},
   daily: { date: today(), ids: [] }, favorites: [], lists: [], streak: { last: "", count: 0 },
   xp: 0, notify: false,
 };
