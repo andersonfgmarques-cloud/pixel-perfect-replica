@@ -433,9 +433,9 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
             <div className="space-y-2">
               {visibleFrequency.map((item) => {
                 const kind = item.pos.toLowerCase();
-                const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘"
-                  : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬"
-                  : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍"
+                const icon = kind.includes("pronoun") ? "👤" : kind.includes("verb") ? "⚡"
+                  : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨"
+                  : kind.includes("adverb") ? "💬" : kind.includes("preposition") ? "📍"
                   : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
                 return <button key={item.r} onClick={() => go({ name: "frequency-word", item })}
                   className="flex w-full items-center gap-3 rounded-3xl bg-card p-4 text-left shadow-soft transition active:scale-[0.99]">
@@ -459,7 +459,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
 function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord; back: () => void }) {
   const fav = s.favorites.includes("frequency-" + item.r);
   const kind = item.pos.toLowerCase();
-  const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬" : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍" : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
+  const icon = kind.includes("pronoun") ? "👤" : kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬" : kind.includes("preposition") ? "📍" : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
   const knownWord = WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase());
   const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
   const examplePt = item.w.toLowerCase() === "you" ? "Posso ajudar você?" : "";
