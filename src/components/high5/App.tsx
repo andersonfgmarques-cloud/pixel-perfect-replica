@@ -423,14 +423,9 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
             {s.cards[w.id] && <Check className="h-4 w-4 text-success" />}{s.favorites.includes(w.id) && <Heart className="h-4 w-4 fill-accent text-accent" />}</button>)}
         </div>
         <div className="pt-2">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <div><h2 className="text-base font-extrabold">More English words</h2><p className="text-xs text-muted-foreground">Meanings and examples in your selected language</p></div>
-            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">4,977 words</span>
-          </div>
           {frequencyStatus === "loading" && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">Loading frequency vocabulary…</p>}
           {frequencyStatus === "error" && <p className="rounded-2xl bg-card p-4 text-sm text-destructive">Could not load the frequency list. Please refresh the app.</p>}
           {frequencyStatus === "ready" && <>
-            <p className="mb-2 text-xs text-muted-foreground">{frequencyResults.length.toLocaleString()} matching entries · showing {visibleFrequency.length}</p>
             <div className="space-y-2">
               {visibleFrequency.map((item) => {
                 const kind = item.pos.toLowerCase();
