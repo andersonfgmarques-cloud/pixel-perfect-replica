@@ -12,7 +12,7 @@ type Mode = "choice" | "listen" | "translate" | "type" | "speak";
 type View =
   | { name: "home" } | { name: "words" } | { name: "games" } | { name: "progress" }
   | { name: "lesson" } | { name: "practice"; mode: Mode | "mixed"; ids: string[]; title: string; review?: boolean }
-  | { name: "memory" } | { name: "word"; id: string };
+  | { name: "memory" } | { name: "word"; id: string } | { name: "frequency-word"; item: FrequencyWord };
 
 export default function High5App() {
   const s = useStore();
@@ -31,6 +31,7 @@ export default function High5App() {
       {view.name === "practice" && <Practice s={s} {...view} done={() => go({ name: view.review ? "home" : "games" })} />}
       {view.name === "memory" && <Memory s={s} done={() => go({ name: "games" })} />}
       {view.name === "word" && <WordDetail s={s} id={view.id} back={() => go({ name: "words" })} />}
+      {view.name === "frequency-word" && <FrequencyWordDetail s={s} item={view.item} back={() => go({ name: "words" })} />}
       {tab && (
         <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto flex max-w-md justify-around border-t bg-card py-2">
           {([["home", Home, "Home"], ["words", BookOpen, "Words"], ["games", Gamepad2, "Games"], ["progress", BarChart3, "Progress"]] as const).map(([n, I, l]) => (
@@ -436,31 +437,65 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
                   : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬"
                   : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍"
                   : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
-                return <details key={item.r} className="rounded-2xl bg-card shadow-soft">
-                  <summary className="flex cursor-pointer list-none items-center gap-3 p-3">
-                    <span className="text-3xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block font-semibold">{item.w}</span>
-                      <span className="block truncate text-sm text-muted-foreground">{item.meaning || item.pos}</span>
-                    </span>
-                    <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
-                  </summary>
-                  <div className="mx-3 space-y-3 border-t px-1 py-3 text-sm">
-                    <div className="flex items-center justify-center gap-3">
-                      <SpeakBtn s={s} text={item.w} />
-                      {item.ipa && <span className="font-medium text-muted-foreground">{item.ipa}</span>}
-                    </div>
-                    <p className="text-center text-xs font-semibold text-muted-foreground">{item.pos}</p>
-                    {item.meaning && <p><span className="font-semibold">Meaning:</span> {item.meaning}</p>}
-                    {item.example && <button onClick={() => { const utterance = new SpeechSynthesisUtterance(item.example); utterance.lang = s.accent; window.speechSynthesis.speak(utterance); }} className="w-full rounded-2xl bg-muted px-4 py-3 text-left italic">“{item.example}” <Volume2 className="inline h-4 w-4" /></button>}
-                    {item.lemma && <p className="text-xs text-muted-foreground">Lemma: {item.lemma}</p>}
-                  </div>
-                </details>;
+                return <button key={item.r} onClick={() => go({ name: "frequency-word", item })}
+                  className="flex w-full items-center gap-3 rounded-3xl bg-card p-4 text-left shadow-soft transition active:scale-[0.99]">
+                  <span className="text-3xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block font-semibold">{item.w}</span>
+                    <span className="block truncate text-sm text-muted-foreground">{item.meaning || item.pos}</span>
+                  </span>
+                  <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
+                </button>;
               })}
             </div>
             {!q.trim() && !showAllFrequency && frequencyResults.length > 30 && <button onClick={() => setShowAllFrequency(true)} className="mt-3 w-full rounded-2xl bg-secondary px-4 py-3 text-sm font-bold">Show more frequency words</button>}
           </>}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord; back: () => void }) {
+  const fav = s.favorites.includes(`frequency-${item.r}`);
+  const kind = item.pos.toLowerCase();
+  const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘"
+    : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬"
+    : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍"
+    : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
+  const speakExample = () => {
+    if (!item.example || typeof window === "undefined") return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(item.example);
+    utterance.lang = s.accent;
+    window.speechSynthesis.speak(utterance);
+  };
+  return (
+    <div>
+      <Header title={item.w} back={back} />
+      <div className="space-y-4 px-5 text-center">
+        <div className="flex min-h-48 items-center justify-center rounded-[2rem] bg-card p-8 shadow-soft">
+          <span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
+        </div>
+        <div className="flex justify-center gap-3">
+          <SpeakBtn s={s} text={item.w} />
+          <button onClick={() => toggleFav(`frequency-${item.r}`)} aria-label="Favorite"
+            className="rounded-full bg-secondary p-2.5">
+            <Heart className={`h-5 w-5 ${fav ? "fill-accent text-accent" : ""}`} />
+          </button>
+        </div>
+        <p className="text-sm text-muted-foreground">{item.pos} · Frequency vocabulary · Rank #{item.r}</p>
+        {item.ipa && <p className="text-sm font-medium text-muted-foreground">{item.ipa}</p>}
+        {item.example && <button onClick={speakExample}
+          className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{item.example}” <Volume2 className="inline h-4 w-4" /></button>}
+        {item.meaning && <div className="rounded-2xl bg-card p-4 text-left shadow-soft">
+          <p className="mb-1 text-xs font-semibold text-muted-foreground">Meaning in English</p>
+          <p className="font-semibold">{item.meaning}</p>
+        </div>}
+        {item.lemma && <div className="rounded-2xl bg-card p-4 text-left shadow-soft">
+          <p className="text-xs text-muted-foreground">Word family</p><p className="font-semibold">{item.lemma}</p>
+          {item.forms && <p className="mt-1 text-sm text-muted-foreground">{item.forms}</p>}
+        </div>}
       </div>
     </div>
   );
