@@ -492,7 +492,7 @@ function WordDetail({ s, id, back }: { s: State; id: string; back: () => void })
         <div className="grid grid-cols-2 gap-2 text-left">
           {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
             const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
-            const translation = language === "it" ? "" : w.tr[language];
+            const translation = w.tr[language] ?? "";
             return <div key={language} className={`rounded-xl p-3 ${language === s.lang ? "bg-secondary" : "bg-card"}`}>
               <p className="text-xs text-muted-foreground">{labels[language]}</p>
               <p className="font-semibold">{translation || "Tradução em preparação"}</p>
