@@ -1,4 +1,4 @@
-name: Deploy to GitHub Pages
+name: Build and publish High5 Vocabulary
 
 on:
   push:
@@ -6,16 +6,14 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: "pages"
+  group: "high5-publish"
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -32,12 +30,10 @@ jobs:
       - name: Build static site
         run: bun run build
 
-      - name: Verify static output
+      - name: Prepare GitHub Pages output
         run: |
           test -f .output/public/index.html
           cp .output/public/index.html .output/public/404.html
-      - name: Fix asset paths for project Pages URL
-        run: |
           python3 - <<'PY'
           from pathlib import Path
           root = Path(".output/public")
@@ -54,8 +50,6 @@ jobs:
                   html = html.replace(old, new)
               page.write_text(html)
 
-          # TanStack Start also emits absolute asset URLs inside JavaScript chunks.
-          # Rewrite those root-relative references for the GitHub Pages subpath.
           for bundle in root.rglob("*.js"):
               js = bundle.read_text()
               js = js.replace('" /assets/', '"/pixel-perfect-replica/assets/')
@@ -65,18 +59,10 @@ jobs:
               bundle.write_text(js)
           PY
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+      - name: Publish to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          path: .output/public
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: .output/public
+          force_orphan: true
