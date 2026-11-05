@@ -7,7 +7,7 @@ export const getRouter = () => {
 
   const router = createRouter({
     routeTree,
-    basepath: import.meta.env.BASE_URL.replace(/\/$/, ""),
+    basepath: "/pixel-perfect-replica",
     context: { queryClient },
     scrollRestoration: true,
     defaultPreloadStaleTime: 0,
