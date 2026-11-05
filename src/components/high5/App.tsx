@@ -362,14 +362,40 @@ function GamesView({ s, go }: { s: State; go: (v: View) => void }) {
 }
 
 /* ---------- words / dictionary ---------- */
+type FrequencyWord = {
+  r: number; w: string; ipa: string; pos: string; meaning: string;
+  example: string; lemma: string; count: number; forms: string; tags: string;
+};
+
 function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
   const [q, setQ] = useState(""); const [cat, setCat] = useState("all"); const [lvl, setLvl] = useState("all");
   const [filter, setFilter] = useState<"all" | "learned" | "fav" | "hard" | string>("all");
+  const [frequency, setFrequency] = useState<FrequencyWord[]>([]);
+  const [frequencyStatus, setFrequencyStatus] = useState<"loading" | "ready" | "error">("loading");
+  const [showAllFrequency, setShowAllFrequency] = useState(false);
+  useEffect(() => {
+    let active = true;
+    fetch(`${import.meta.env.BASE_URL}data/english-top-5000.json`)
+      .then((response) => { if (!response.ok) throw new Error("Could not load vocabulary"); return response.json(); })
+      .then((data: { items?: FrequencyWord[] }) => {
+        if (!active) return;
+        setFrequency(Array.isArray(data.items) ? data.items : []);
+        setFrequencyStatus("ready");
+      })
+      .catch(() => { if (active) setFrequencyStatus("error"); });
+    return () => { active = false; };
+  }, []);
   const list = s.lists.find((l) => l.name === filter);
   const res = WORDS.filter((w) => (cat === "all" || w.category === cat) && (lvl === "all" || w.level === lvl)
     && (!q || w.word.includes(q.toLowerCase()) || w.tr[s.lang].toLowerCase().includes(q.toLowerCase()))
     && (filter === "all" || (filter === "learned" && s.cards[w.id]) || (filter === "fav" && s.favorites.includes(w.id))
       || (filter === "hard" && isHard(s.cards[w.id])) || (list && list.ids.includes(w.id))));
+  const frequencyResults = useMemo(() => {
+    const term = q.trim().toLowerCase();
+    return frequency.filter((item) => !term || item.w.toLowerCase().includes(term)
+      || item.meaning.toLowerCase().includes(term) || item.lemma.toLowerCase().includes(term));
+  }, [frequency, q]);
+  const visibleFrequency = showAllFrequency || q.trim() ? frequencyResults.slice(0, 100) : frequencyResults.slice(0, 30);
   const chip = (on: boolean) => `shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold ${on ? "bg-primary text-primary-foreground" : "bg-card"}`;
   const newList = () => { const n = prompt("List name"); if (n && !s.lists.some((l) => l.name === n)) setState((x) => ({ ...x, lists: [...x.lists, { name: n, ids: [] }] })); };
   return (
@@ -378,7 +404,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
         <div className="flex items-center gap-2 rounded-2xl bg-card px-4 shadow-soft"><Search className="h-4 w-4 text-muted-foreground" />
           <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search in English or your language" className="w-full bg-transparent py-3 outline-none" /></div>
         <div className="flex gap-2 overflow-x-auto pb-1">
-          {[["all", "All"], ["learned", "Learned"], ["fav", "♥ Favorites"], ["hard", "Difficult"], ...s.lists.map((l) => [l.name, `📂 ${l.name}`])].map(([k, l]) =>
+          {[[ "all", "All" ], [ "learned", "Learned" ], [ "fav", "♥ Favorites" ], [ "hard", "Difficult" ], ...s.lists.map((l) => [l.name, `📂 ${l.name}`])].map(([k, l]) =>
             <button key={k} className={chip(filter === k)} onClick={() => setFilter(k)}>{l}</button>)}
           <button className={chip(false)} onClick={newList} aria-label="New list"><Plus className="h-4 w-4" /></button>
         </div>
@@ -388,11 +414,38 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
           <select value={lvl} onChange={(e) => setLvl(e.target.value)} className="flex-1 rounded-xl bg-card p-2 text-sm">
             <option value="all">All levels</option>{LEVEL_ORDER.map((l) => <option key={l}>{l}</option>)}</select>
         </div>
-        <p className="text-xs text-muted-foreground">{res.length} words</p>
+        <p className="text-xs text-muted-foreground">{res.length} words in your study list</p>
         <div className="space-y-2">
           {res.map((w) => <button key={w.id} onClick={() => go({ name: "word", id: w.id })} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-soft">
             <Pic w={w} size="text-3xl" /><div className="flex-1"><p className="font-semibold">{w.word}</p><p className="text-sm text-muted-foreground">{w.tr[s.lang]}</p></div>
             {s.cards[w.id] && <Check className="h-4 w-4 text-success" />}{s.favorites.includes(w.id) && <Heart className="h-4 w-4 fill-accent text-accent" />}</button>)}
+        </div>
+        <div className="border-t pt-5">
+          <div className="mb-3 flex items-center justify-between gap-2">
+            <div><h2 className="text-lg font-extrabold">Frequency vocabulary</h2><p className="text-xs text-muted-foreground">English frequency list · meanings and examples in English</p></div>
+            <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">4,977 words</span>
+          </div>
+          {frequencyStatus === "loading" && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">Loading frequency vocabulary…</p>}
+          {frequencyStatus === "error" && <p className="rounded-2xl bg-card p-4 text-sm text-destructive">Could not load the frequency list. Please refresh the app.</p>}
+          {frequencyStatus === "ready" && <>
+            <p className="mb-2 text-xs text-muted-foreground">{frequencyResults.length.toLocaleString()} matching entries · showing {visibleFrequency.length}</p>
+            <div className="space-y-2">
+              {visibleFrequency.map((item) => <details key={item.r} className="rounded-2xl bg-card p-3 shadow-soft">
+                <summary className="flex cursor-pointer list-none items-center gap-3">
+                  <span className="w-10 shrink-0 text-xs font-bold text-muted-foreground">#{item.r}</span>
+                  <span className="min-w-0 flex-1"><span className="block font-semibold">{item.w}</span><span className="block truncate text-xs text-muted-foreground">{item.ipa || item.pos}</span></span>
+                  <span className="text-xs text-muted-foreground">{item.pos}</span>
+                </summary>
+                <div className="mt-3 space-y-2 border-t pt-3 text-sm">
+                  {item.ipa && <p><span className="font-semibold">IPA:</span> {item.ipa}</p>}
+                  {item.meaning && <p><span className="font-semibold">Meaning:</span> {item.meaning}</p>}
+                  {item.example && <p className="italic text-muted-foreground">“{item.example}”</p>}
+                  {item.lemma && <p className="text-xs text-muted-foreground">Lemma: {item.lemma}</p>}
+                </div>
+              </details>)}
+            </div>
+            {!q.trim() && !showAllFrequency && frequencyResults.length > 30 && <button onClick={() => setShowAllFrequency(true)} className="mt-3 w-full rounded-2xl bg-secondary px-4 py-3 text-sm font-bold">Show more frequency words</button>}
+          </>}
         </div>
       </div>
     </div>
