@@ -375,7 +375,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
   const [showAllFrequency, setShowAllFrequency] = useState(false);
   useEffect(() => {
     let active = true;
-    fetch(`${import.meta.env.BASE_URL}data/english-top-5000.json`)
+    fetch("/pixel-perfect-replica/data/english-top-5000.json")
       .then((response) => { if (!response.ok) throw new Error("Could not load vocabulary"); return response.json(); })
       .then((data: { items?: FrequencyWord[] }) => {
         if (!active) return;
