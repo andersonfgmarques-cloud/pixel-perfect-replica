@@ -9,6 +9,8 @@ export default defineConfig({
   // GitHub Pages serves this repository under /pixel-perfect-replica/.
   base: "/pixel-perfect-replica/",
   tanstackStart: {
+    // TanStack Start also needs the base path for client hydration.
+    router: { basepath: "/pixel-perfect-replica" },
     server: { entry: "server" },
     // Generate static HTML so GitHub Pages can host the app without a Node server.
     prerender: {
