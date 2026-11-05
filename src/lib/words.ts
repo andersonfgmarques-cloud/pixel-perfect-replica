@@ -1,9 +1,9 @@
 export type Level = "Beginner" | "Intermediate" | "Advanced";
-export const LANGS = ["pt-BR", "es", "fr", "ru", "ar", "hi", "tr", "id", "vi"] as const;
+export const LANGS = ["pt-BR", "es", "fr", "it", "ru", "ar", "hi", "tr", "id", "vi"] as const;
 export type Lang = (typeof LANGS)[number];
 export const LANG_NAMES: Record<Lang, string> = {
   "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", ru: "Русский", ar: "العربية",
-  hi: "हिन्दी", tr: "Türkçe", id: "Bahasa Indonesia", vi: "Tiếng Việt",
+  hi: "हिन्दी", tr: "Türkçe", id: "Bahasa Indonesia", vi: "Tiếng Việt", it: "Italiano",
 };
 
 export const CATEGORIES = [
@@ -153,13 +153,31 @@ const RAW: Record<string, string[]> = {
   ],
 };
 
+const IT_TRANSLATIONS: Record<string, string> = {
+  "wake up": "svegliarsi", shower: "doccia", breakfast: "colazione", toothbrush: "spazzolino da denti", routine: "routine", chore: "faccenda domestica",
+  apple: "mela", bread: "pane", cheese: "formaggio", carrot: "carota", delicious: "delizioso", ingredient: "ingrediente",
+  passport: "passaporto", suitcase: "valigia", beach: "spiaggia", map: "mappa", journey: "viaggio", destination: "destinazione",
+  money: "denaro", meeting: "riunione", contract: "contratto", profit: "profitto", negotiate: "negoziare", investment: "investimento",
+  book: "libro", teacher: "insegnante", pencil: "matita", school: "scuola", exam: "esame", knowledge: "conoscenza",
+  baby: "neonato", family: "famiglia", friend: "amico", grandmother: "nonna", neighbor: "vicino", stranger: "sconosciuto",
+  tree: "albero", flower: "fiore", sun: "sole", mountain: "montagna", river: "fiume", volcano: "vulcano",
+  phone: "telefono", computer: "computer", battery: "batteria", keyboard: "tastiera", download: "scaricare", satellite: "satellite",
+  happy: "felice", sad: "triste", angry: "arrabbiato", scared: "spaventato", proud: "orgoglioso", anxious: "ansioso",
+  doctor: "medico", medicine: "medicina", headache: "mal di testa", hospital: "ospedale", fever: "febbre", recovery: "guarigione",
+  office: "ufficio", boss: "capo", hammer: "martello", salary: "stipendio", deadline: "scadenza", colleague: "collega",
+  bed: "letto", door: "porta", chair: "sedia", kitchen: "cucina", window: "finestra", furniture: "mobili",
+  shop: "negozio", price: "prezzo", cheap: "economico", basket: "cesto", receipt: "scontrino", discount: "sconto",
+  car: "auto", bus: "autobus", bicycle: "bicicletta", train: "treno", airport: "aeroporto", traffic: "traffico",
+  clock: "orologio", morning: "mattina", night: "notte", calendar: "calendario", weekend: "fine settimana", century: "secolo",
+};
+
 const LV: Record<string, Level> = { B: "Beginner", I: "Intermediate", A: "Advanced" };
 
 export const WORDS: Word[] = Object.entries(RAW).flatMap(([category, rows]) =>
   rows.map((row) => {
     const [word, image, lv, pos, example, ...t] = row.split("|");
     const sourceLangs: Lang[] = ["es", "fr", "ru", "ar", "hi", "tr", "id", "vi", "pt-BR"];
-    const tr = Object.fromEntries(sourceLangs.map((l, i) => [l, t[i]])) as Record<Lang, string>;
+    const tr = { ...Object.fromEntries(sourceLangs.map((l, i) => [l, t[i]])), it: IT_TRANSLATIONS[word] ?? "" } as Record<Lang, string>;
     return { id: word.replace(/\s+/g, "-"), word, image, category, level: LV[lv], pos, example, tr };
   }),
 );
