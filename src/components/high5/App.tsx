@@ -72,7 +72,7 @@ function Onboarding() {
   const opt = (on: boolean) => `w-full rounded-2xl border-2 p-4 text-left font-semibold ${on ? "border-primary bg-secondary" : "border-border bg-card"}`;
   return (
     <div className="mx-auto flex min-h-screen max-w-md flex-col px-6 py-10">
-      <div className="mb-8 text-center"><img src={`${import.meta.env.BASE_URL}icon-512.png`} alt="" width={80} height={80} className="mx-auto mb-3 rounded-3xl" />
+      <div className="mb-8 text-center"><img src={`/pixel-perfect-replica/icon-512.png`} alt="" width={80} height={80} className="mx-auto mb-3 rounded-3xl" />
         <h1 className="text-3xl font-extrabold">High5 Vocabulary</h1>
         <p className="text-muted-foreground">10 new English words a day.</p></div>
       <div className="flex-1 space-y-3 animate-pop" key={step}>
@@ -100,7 +100,7 @@ function HomeView({ s, go }: { s: State; go: (v: View) => void }) {
       const k = "high5-notified"; if (localStorage.getItem(k) === s.daily.date) return;
       localStorage.setItem(k, s.daily.date);
       const w = WORDS[Math.floor(Math.random() * WORDS.length)];
-      new Notification(`Word of the day: ${w.word} ${w.image}`, { body: w.example, icon: `${import.meta.env.BASE_URL}icon-512.png` });
+      new Notification(`Word of the day: ${w.word} ${w.image}`, { body: w.example, icon: `/pixel-perfect-replica/icon-512.png` });
     }
   }, [s.notify, s.daily.date]);
   return (
