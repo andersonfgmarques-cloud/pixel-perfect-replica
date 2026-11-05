@@ -457,50 +457,20 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
 }
 
 function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord; back: () => void }) {
-  const fav = s.favorites.includes(`frequency-${item.r}`);
+  const fav = s.favorites.includes("frequency-" + item.r);
   const kind = item.pos.toLowerCase();
-  const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘"
-    : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬"
-    : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍"
-    : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
-  const speakExample = () => {
-    if (!item.example || typeof window === "undefined") return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(item.example);
-    utterance.lang = s.accent;
-    window.speechSynthesis.speak(utterance);
-  };
-  return (
-    <div>
-      <Header title={item.w} back={back} />
-      <div className="space-y-4 px-5 text-center">
-        <div className="flex min-h-48 items-center justify-center rounded-[2rem] bg-card p-8 shadow-soft">
-          <span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
-        </div>
-        <div className="flex justify-center gap-3">
-          <SpeakBtn s={s} text={item.w} />
-          <button onClick={() => toggleFav(`frequency-${item.r}`)} aria-label="Favorite"
-            className="rounded-full bg-secondary p-2.5">
-            <Heart className={`h-5 w-5 ${fav ? "fill-accent text-accent" : ""}`} />
-          </button>
-        </div>
-        <p className="text-sm text-muted-foreground">{item.pos} · Frequency vocabulary · Rank #{item.r}</p>
-        {item.ipa && <p className="text-sm font-medium text-muted-foreground">{item.ipa}</p>}
-        {item.example && <button onClick={speakExample}
-          className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{item.example}” <Volume2 className="inline h-4 w-4" /></button>}
-        {item.meaning && <div className="rounded-2xl bg-card p-4 text-left shadow-soft">
-          <p className="mb-1 text-xs font-semibold text-muted-foreground">Meaning in English</p>
-          <p className="font-semibold">{item.meaning}</p>
-        </div>}
-        {item.lemma && <div className="rounded-2xl bg-card p-4 text-left shadow-soft">
-          <p className="text-xs text-muted-foreground">Word family</p><p className="font-semibold">{item.lemma}</p>
-          {item.forms && <p className="mt-1 text-sm text-muted-foreground">{item.forms}</p>}
-        </div>}
-      </div>
-    </div>
-  );
+  const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬" : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍" : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
+  const knownWord = WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase());
+  const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
+  const speakExample = () => { if (!example || typeof window === "undefined") return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(example); utterance.lang = s.accent; window.speechSynthesis.speak(utterance); };
+  return (<div><Header title={item.w} back={back} /><div className="space-y-4 px-5 text-center">
+    <div className="flex min-h-48 items-center justify-center rounded-[2rem] bg-card p-8 shadow-soft"><span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span></div>
+    <div className="flex justify-center gap-3"><SpeakBtn s={s} text={item.w} /><button onClick={() => toggleFav("frequency-" + item.r)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={"h-5 w-5 " + (fav ? "fill-accent text-accent" : "")} /></button></div>
+    <p className="text-sm text-muted-foreground">{item.pos}{item.ipa ? " · " + item.ipa : ""}</p>
+    {example && <button onClick={speakExample} className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>}
+    {knownWord && <div className="grid grid-cols-2 gap-2 text-left">{LANGS.map((language) => <div key={language} className={"rounded-xl p-3 " + (language === s.lang ? "bg-secondary" : "bg-card")}><p className="text-xs text-muted-foreground">{LANG_NAMES[language]}</p><p className="font-semibold">{knownWord.tr[language]}</p></div>)}</div>}
+  </div></div>);
 }
-
 function WordDetail({ s, id, back }: { s: State; id: string; back: () => void }) {
   const w = wordById(id)!; const c = s.cards[id]; const speak = useSpeak(s.accent); const fav = s.favorites.includes(id);
   const cat = CATEGORIES.find((x) => x.id === w.category)!;
