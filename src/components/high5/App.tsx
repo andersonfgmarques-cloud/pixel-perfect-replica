@@ -424,7 +424,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
         </div>
         <div className="pt-2">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <div><h2 className="text-base font-extrabold">More English words</h2><p className="text-xs text-muted-foreground">Explore the frequency dictionary</p></div>
+            <div><h2 className="text-base font-extrabold">More English words</h2><p className="text-xs text-muted-foreground">Meanings and examples in your selected language</p></div>
             <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">4,977 words</span>
           </div>
           {frequencyStatus === "loading" && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">Loading frequency vocabulary…</p>}
@@ -443,7 +443,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
                   <span className="text-3xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{item.w}</span>
-                    <span className="block truncate text-sm text-muted-foreground">{item.meaning || item.pos}</span>
+                    <span className="block truncate text-sm text-muted-foreground">{FREQUENCY_TRANSLATIONS[item.r]?.[s.lang]?.meaning ?? "Translation in preparation"}</span>
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
                 </button>;
