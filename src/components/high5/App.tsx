@@ -422,9 +422,9 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
             <Pic w={w} size="text-3xl" /><div className="flex-1"><p className="font-semibold">{w.word}</p><p className="text-sm text-muted-foreground">{w.tr[s.lang]}</p></div>
             {s.cards[w.id] && <Check className="h-4 w-4 text-success" />}{s.favorites.includes(w.id) && <Heart className="h-4 w-4 fill-accent text-accent" />}</button>)}
         </div>
-        <div className="border-t pt-5">
+        <div className="pt-2">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <div><h2 className="text-lg font-extrabold">Frequency vocabulary</h2><p className="text-xs text-muted-foreground">English frequency list · meanings and examples in English</p></div>
+            <div><h2 className="text-base font-extrabold">More English words</h2><p className="text-xs text-muted-foreground">Explore the frequency dictionary</p></div>
             <span className="rounded-full bg-secondary px-3 py-1 text-xs font-bold">4,977 words</span>
           </div>
           {frequencyStatus === "loading" && <p className="rounded-2xl bg-card p-4 text-sm text-muted-foreground">Loading frequency vocabulary…</p>}
