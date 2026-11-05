@@ -443,7 +443,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
                   <span className="text-3xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
                   <span className="min-w-0 flex-1">
                     <span className="block font-semibold">{item.w}</span>
-                    <span className="block truncate text-sm text-muted-foreground">{FREQUENCY_TRANSLATIONS[item.r]?.[s.lang]?.meaning ?? "Translation in preparation"}</span>
+                    <span className="block truncate text-sm text-muted-foreground">{(FREQUENCY_TRANSLATIONS[item.r]?.[s.lang]?.meaning ?? WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase())?.tr[s.lang] ?? "Tradução em preparação").split(" — ")[0]}</span>
                   </span>
                   <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
                 </button>;
