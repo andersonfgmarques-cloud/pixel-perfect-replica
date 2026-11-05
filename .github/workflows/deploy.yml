@@ -43,6 +43,7 @@ jobs:
           root = Path(".output/public")
           replacements = {
               '="/assets/': '="/pixel-perfect-replica/assets/',
+              '"/assets/': '"/pixel-perfect-replica/assets/',
               '="/manifest.webmanifest': '="/pixel-perfect-replica/manifest.webmanifest',
               '="/icon-512.png': '="/pixel-perfect-replica/icon-512.png',
               '="/favicon.png': '="/pixel-perfect-replica/favicon.png',
