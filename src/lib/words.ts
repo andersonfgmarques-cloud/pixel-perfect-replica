@@ -158,7 +158,8 @@ const LV: Record<string, Level> = { B: "Beginner", I: "Intermediate", A: "Advanc
 export const WORDS: Word[] = Object.entries(RAW).flatMap(([category, rows]) =>
   rows.map((row) => {
     const [word, image, lv, pos, example, ...t] = row.split("|");
-    const tr = Object.fromEntries(LANGS.map((l, i) => [l, t[i]])) as Record<Lang, string>;
+    const sourceLangs: Lang[] = ["es", "fr", "ru", "ar", "hi", "tr", "id", "vi", "pt-BR"];
+    const tr = Object.fromEntries(sourceLangs.map((l, i) => [l, t[i]])) as Record<Lang, string>;
     return { id: word.replace(/\s+/g, "-"), word, image, category, level: LV[lv], pos, example, tr };
   }),
 );
