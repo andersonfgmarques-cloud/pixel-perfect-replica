@@ -430,19 +430,29 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
           {frequencyStatus === "ready" && <>
             <p className="mb-2 text-xs text-muted-foreground">{frequencyResults.length.toLocaleString()} matching entries · showing {visibleFrequency.length}</p>
             <div className="space-y-2">
-              {visibleFrequency.map((item) => <details key={item.r} className="rounded-2xl bg-card p-3 shadow-soft">
-                <summary className="flex cursor-pointer list-none items-center gap-3">
-                  <span className="w-10 shrink-0 text-xs font-bold text-muted-foreground">#{item.r}</span>
-                  <span className="min-w-0 flex-1"><span className="block font-semibold">{item.w}</span><span className="block truncate text-xs text-muted-foreground">{item.ipa || item.pos}</span></span>
-                  <span className="text-xs text-muted-foreground">{item.pos}</span>
-                </summary>
-                <div className="mt-3 space-y-2 border-t pt-3 text-sm">
-                  {item.ipa && <p><span className="font-semibold">IPA:</span> {item.ipa}</p>}
-                  {item.meaning && <p><span className="font-semibold">Meaning:</span> {item.meaning}</p>}
-                  {item.example && <p className="italic text-muted-foreground">“{item.example}”</p>}
-                  {item.lemma && <p className="text-xs text-muted-foreground">Lemma: {item.lemma}</p>}
-                </div>
-              </details>)}
+              {visibleFrequency.map((item) => {
+                const kind = item.pos.toLowerCase();
+                const icon = kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘"
+                  : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬"
+                  : kind.includes("pronoun") ? "👤" : kind.includes("preposition") ? "📍"
+                  : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
+                return <details key={item.r} className="rounded-2xl bg-card shadow-soft">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 p-3">
+                    <span className="text-3xl leading-none" role="img" aria-label={item.pos}>{icon}</span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block font-semibold">{item.w}</span>
+                      <span className="block truncate text-sm text-muted-foreground">{item.meaning || item.pos}</span>
+                    </span>
+                    <span className="shrink-0 text-xs text-muted-foreground">#{item.r}</span>
+                  </summary>
+                  <div className="mx-3 space-y-2 border-t px-1 py-3 text-sm">
+                    <p className="text-xs font-semibold text-muted-foreground">{item.pos}{item.ipa ? ` · ${item.ipa}` : ""}</p>
+                    {item.meaning && <p><span className="font-semibold">Meaning:</span> {item.meaning}</p>}
+                    {item.example && <p className="rounded-2xl bg-muted px-4 py-3 italic">“{item.example}”</p>}
+                    {item.lemma && <p className="text-xs text-muted-foreground">Lemma: {item.lemma}</p>}
+                  </div>
+                </details>;
+              })}
             </div>
             {!q.trim() && !showAllFrequency && frequencyResults.length > 30 && <button onClick={() => setShowAllFrequency(true)} className="mt-3 w-full rounded-2xl bg-secondary px-4 py-3 text-sm font-bold">Show more frequency words</button>}
           </>}
