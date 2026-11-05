@@ -490,7 +490,14 @@ function WordDetail({ s, id, back }: { s: State; id: string; back: () => void })
         <p className="text-sm text-muted-foreground">{w.pos} · {w.level} · {cat.icon} {cat.name}</p>
         <button onClick={() => speak(w.example)} className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button>
         <div className="grid grid-cols-2 gap-2 text-left">
-          {LANGS.map((l) => <div key={l} className={`rounded-xl p-3 ${l === s.lang ? "bg-secondary" : "bg-card"}`}><p className="text-xs text-muted-foreground">{LANG_NAMES[l]}</p><p className="font-semibold">{w.tr[l]}</p></div>)}
+          {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
+            const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
+            const translation = language === "it" ? "" : w.tr[language];
+            return <div key={language} className={`rounded-xl p-3 ${language === s.lang ? "bg-secondary" : "bg-card"}`}>
+              <p className="text-xs text-muted-foreground">{labels[language]}</p>
+              <p className="font-semibold">{translation || "Tradução em preparação"}</p>
+            </div>;
+          })}
         </div>
         {c && <p className="text-sm text-muted-foreground">Next review: {new Date(c.due).toLocaleDateString()} · ✓{c.correct} ✗{c.wrong}</p>}
         {s.lists.length > 0 && <div className="flex flex-wrap justify-center gap-2">{s.lists.map((l) => { const on = l.ids.includes(id); return (
