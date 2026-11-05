@@ -66,7 +66,7 @@ const SpeakBtn = ({ s, text, big }: { s: State; text: string; big?: boolean }) =
 /* ---------- onboarding ---------- */
 function Onboarding() {
   const [step, setStep] = useState(0);
-  const [lang, setLang] = useState<Lang>("es");
+  const [lang, setLang] = useState<Lang>("pt-BR");
   const [level, setLevel] = useState<Level>("Beginner");
   const [accent, setAccent] = useState<State["accent"]>("en-US");
   const opt = (on: boolean) => `w-full rounded-2xl border-2 p-4 text-left font-semibold ${on ? "border-primary bg-secondary" : "border-border bg-card"}`;
