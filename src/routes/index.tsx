@@ -1,23 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
+import High5App from "@/components/high5/App";
 
-// The home route ships no og:image, so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "High5 Vocabulary — Learn 10 English words a day" },
+      { name: "description", content: "Learn English vocabulary with pictures, native audio, games and spaced repetition. Translations in 8 languages." },
+      { property: "og:title", content: "High5 Vocabulary" },
+      { property: "og:description", content: "Learn 10 English words a day with pictures, audio, games and spaced repetition." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
+    ],
+  }),
+  component: High5App,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}
