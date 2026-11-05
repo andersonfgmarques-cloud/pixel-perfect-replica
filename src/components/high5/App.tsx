@@ -460,12 +460,12 @@ function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord;
   const translations = FREQUENCY_TRANSLATIONS[item.r] ?? {};
   const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
   const exampleTranslation = translations[s.lang]?.example ?? "";
-  const speakExample = () => { if (!example || typeof window === "undefined") return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(example); utterance.lang = s.accent; window.speechSynthesis.speak(utterance); };
+  const speak = useSpeak(s.accent);
   return (<div><Header title={item.w} back={back} /><div className="space-y-4 px-5 text-center">
     <div className="rounded-[2rem] bg-card p-8 shadow-soft"><div className="flex min-h-32 items-center justify-center"><span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span></div></div>
     <div className="flex justify-center gap-3"><SpeakBtn s={s} text={item.w} /><button onClick={() => toggleFav("frequency-" + item.r)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={"h-5 w-5 " + (fav ? "fill-accent text-accent" : "")} /></button></div>
     <p className="text-sm text-muted-foreground">{item.pos}{item.ipa ? " · " + item.ipa : ""}</p>
-    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={speakExample} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{exampleTranslation && <p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
+    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={() => speak(example)} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{exampleTranslation && <p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
     <div className="grid grid-cols-2 gap-2 text-left">
       {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
         const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
