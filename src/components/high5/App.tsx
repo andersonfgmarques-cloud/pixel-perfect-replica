@@ -467,10 +467,11 @@ function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord;
     <p className="text-sm text-muted-foreground">{item.pos}{item.ipa ? " · " + item.ipa : ""}</p>
     {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={speakExample} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{exampleTranslation && <p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
     <div className="grid grid-cols-2 gap-2 text-left">
-      {LANGS.map((language) => {
-        const translation = translations[language]?.meaning ?? knownWord?.tr[language] ?? "";
+      {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
+        const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
+        const translation = translations[language]?.meaning ?? (language === "it" ? "" : knownWord?.tr[language] ?? "");
         return <div key={language} className={`rounded-xl p-3 ${language === s.lang ? "bg-secondary" : "bg-card"}`}>
-          <p className="text-xs text-muted-foreground">{LANG_NAMES[language]}</p>
+          <p className="text-xs text-muted-foreground">{labels[language]}</p>
           <p className="font-semibold">{translation || "Tradução em preparação"}</p>
         </div>;
       })}
