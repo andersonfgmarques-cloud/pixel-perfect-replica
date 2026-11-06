@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import {
-  Volume2, Home, BookOpen, Gamepad2, BarChart3, Heart, Mic, Check, X, Flame, Star, ArrowLeft, Search, Plus, Bell, RotateCcw,
+  Volume2, Home, BookOpen, Gamepad2, BarChart3, Heart, Mic, Check, X, Flame, Star, ArrowLeft, Search, Plus, Bell, RotateCcw, Video,
 } from "lucide-react";
 import { WORDS, CATEGORIES, LANGS, LANG_NAMES, LEVEL_ORDER, wordById, type Word, type Level, type Lang } from "@/lib/words";
 import { FREQUENCY_TRANSLATIONS } from "@/lib/frequency-translations";
+import RealLife from "@/components/high5/RealLife";
 import { TranslationText, PronunciationHint, useTranslation } from "@/lib/translation";
 import {
   useStore, setState, DAILY_LIMIT, dueWords, suggestNew, remainingToday, markLearned, recordResult, bumpStreak,
@@ -12,7 +13,7 @@ import {
 
 type Mode = "choice" | "listen" | "translate" | "type" | "speak";
 type View =
-  | { name: "home" } | { name: "words" } | { name: "games" } | { name: "progress" }
+  | { name: "home" } | { name: "words" } | { name: "games" } | { name: "progress" } | { name: "real-life" }
   | { name: "lesson" } | { name: "practice"; mode: Mode | "mixed"; ids: string[]; title: string; review?: boolean }
   | { name: "memory" } | { name: "word"; id: string } | { name: "frequency-word"; item: FrequencyWord };
 
@@ -22,13 +23,14 @@ export default function High5App() {
   if (!s) return <div className="min-h-screen bg-background" />;
   if (!s.onboarded) return <Onboarding />;
   const go = (v: View) => { setView(v); window.scrollTo(0, 0); };
-  const tab = ["home", "words", "games", "progress"].includes(view.name);
+  const tab = ["home", "words", "games", "progress", "real-life"].includes(view.name);
   return (
     <div className="mx-auto min-h-screen max-w-md bg-background pb-24">
       {view.name === "home" && <HomeView s={s} go={go} />}
       {view.name === "words" && <WordsView s={s} go={go} />}
       {view.name === "games" && <GamesView s={s} go={go} />}
       {view.name === "progress" && <ProgressView s={s} />}
+      {view.name === "real-life" && <RealLife lang={s.lang} accent={s.accent} back={() => go({ name: "home" })} />}
       {view.name === "lesson" && <Lesson s={s} done={() => go({ name: "home" })} />}
       {view.name === "practice" && <Practice s={s} {...view} done={() => go({ name: view.review ? "home" : "games" })} />}
       {view.name === "memory" && <Memory s={s} done={() => go({ name: "games" })} />}
@@ -36,7 +38,7 @@ export default function High5App() {
       {view.name === "frequency-word" && <FrequencyWordDetail s={s} item={view.item} back={() => go({ name: "words" })} />}
       {tab && (
         <nav className="fixed inset-x-0 bottom-0 z-10 mx-auto flex max-w-md justify-around border-t bg-card py-2">
-          {([["home", Home, "Home"], ["words", BookOpen, "Words"], ["games", Gamepad2, "Games"], ["progress", BarChart3, "Progress"]] as const).map(([n, I, l]) => (
+          {([["home", Home, "Home"], ["words", BookOpen, "Words"], ["real-life", Video, "Real Life"], ["games", Gamepad2, "Games"], ["progress", BarChart3, "Progress"]] as const).map(([n, I, l]) => (
             <button key={n} onClick={() => go({ name: n } as View)}
               className={`flex flex-col items-center gap-0.5 px-4 py-1 text-xs font-medium ${view.name === n ? "text-primary" : "text-muted-foreground"}`}>
               <I className="h-5 w-5" />{l}
