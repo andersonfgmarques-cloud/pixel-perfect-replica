@@ -4,6 +4,7 @@ import {
 } from "lucide-react";
 import { WORDS, CATEGORIES, LANGS, LANG_NAMES, LEVEL_ORDER, wordById, type Word, type Level, type Lang } from "@/lib/words";
 import { FREQUENCY_TRANSLATIONS } from "@/lib/frequency-translations";
+import { TranslationText, useTranslation } from "@/lib/translation";
 import {
   useStore, setState, DAILY_LIMIT, dueWords, suggestNew, remainingToday, markLearned, recordResult, bumpStreak,
   toggleFav, isHard, useSpeak, shuffle, type State,
@@ -187,7 +188,7 @@ function Lesson({ s, done }: { s: State; done: () => void }) {
         {phase === "see" && <>
           <div className="flex items-center gap-3"><h2 className="text-4xl font-extrabold">{w.word}</h2><SpeakBtn s={s} text={w.word} /></div>
           <p className="text-sm text-muted-foreground">{w.pos} · {w.level}</p>
-          <p className="text-xl font-semibold text-primary">{w.tr[s.lang]}</p>
+          <p className="text-xl font-semibold text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p>
           <button onClick={() => speak(w.example)} className="rounded-2xl bg-muted px-4 py-3 italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button>
         </>}
         {phase === "type" && <TypeBox w={w} s={s} onDone={() => next()} />}
@@ -204,7 +205,7 @@ function TypeBox({ w, s, onDone }: { w: Word; s: State; onDone: (ok: boolean) =>
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-center gap-2"><p className="font-semibold">Write the word</p><SpeakBtn s={s} text={w.word} /></div>
-      <p className="text-sm text-muted-foreground">{w.tr[s.lang]} · {w.word.length} letters</p>
+      <p className="text-sm text-muted-foreground"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /> · {w.word.length} letters</p>
       <input autoFocus value={v} onChange={(e) => setV(e.target.value)} onKeyDown={(e) => e.key === "Enter" && res === null && check()}
         autoCapitalize="none" autoCorrect="off" spellCheck={false}
         className={`w-full rounded-2xl border-2 bg-card p-4 text-center font-display text-2xl outline-none ${res === null ? "border-border focus:border-primary" : res ? "border-success" : "border-destructive"}`} />
@@ -277,7 +278,7 @@ function Choice({ s, w, m, onDone }: { s: State; w: Word; m: Mode; onDone: (ok: 
     <>
       {m === "choice" && <><p className="font-semibold text-muted-foreground">What is this?</p><div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-8xl" /></div></>}
       {m === "listen" && <><p className="font-semibold text-muted-foreground">Listen and choose</p><SpeakBtn s={s} text={w.word} big /></>}
-      {m === "translate" && <><p className="font-semibold text-muted-foreground">Which word means…</p><h2 className="text-3xl font-extrabold text-primary">{w.tr[s.lang]}</h2></>}
+      {m === "translate" && <><p className="font-semibold text-muted-foreground">Which word means…</p><h2 className="text-3xl font-extrabold text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></h2></>}
       <div className={`grid w-full gap-3 ${m === "listen" ? "grid-cols-2" : "grid-cols-1"}`}>
         {opts.map((o) => {
           const st = !pick ? "border-border bg-card" : o.id === w.id ? "border-success bg-success/15" : o.id === pick ? "border-destructive bg-destructive/10" : "border-border bg-card opacity-50";
@@ -304,7 +305,7 @@ function Results({ s, log, done }: { s: State; log: { id: string; ok: boolean }[
       <div className="space-y-2 text-left">
         {log.map((l, k) => { const w = wordById(l.id)!; return (
           <div key={k} className="flex items-center gap-3 rounded-2xl bg-card p-3 shadow-soft"><Pic w={w} size="text-2xl" />
-            <span className="flex-1 font-semibold">{w.word}</span><span className="text-sm text-muted-foreground">{w.tr[s.lang]}</span>
+            <span className="flex-1 font-semibold">{w.word}</span><span className="text-sm text-muted-foreground"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></span>
             {l.ok ? <Check className="h-5 w-5 text-success" /> : <X className="h-5 w-5 text-destructive" />}</div>); })}
       </div>
       <Btn className="mt-6 w-full" onClick={done}>Continue</Btn>
@@ -419,7 +420,7 @@ function WordsView({ s, go }: { s: State; go: (v: View) => void }) {
         <p className="text-xs text-muted-foreground">{res.length} words in your study list</p>
         <div className="space-y-2">
           {res.map((w) => <button key={w.id} onClick={() => go({ name: "word", id: w.id })} className="flex w-full items-center gap-3 rounded-2xl bg-card p-3 text-left shadow-soft">
-            <Pic w={w} size="text-3xl" /><div className="flex-1"><p className="font-semibold">{w.word}</p><p className="text-sm text-muted-foreground">{w.tr[s.lang]}</p></div>
+            <Pic w={w} size="text-3xl" /><div className="flex-1"><p className="font-semibold">{w.word}</p><p className="text-sm text-muted-foreground"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p></div>
             {s.cards[w.id] && <Check className="h-4 w-4 text-success" />}{s.favorites.includes(w.id) && <Heart className="h-4 w-4 fill-accent text-accent" />}</button>)}
         </div>
         <div className="pt-2">
@@ -459,13 +460,14 @@ function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord;
   const knownWord = WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase());
   const translations = FREQUENCY_TRANSLATIONS[item.r] ?? {};
   const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
-  const exampleTranslation = translations[s.lang]?.example ?? "";
+  const exampleTranslation = useTranslation(example, s.lang, translations[s.lang]?.example ?? "");
+  const selectedTranslation = useTranslation(item.w, s.lang, translations[s.lang]?.meaning ?? knownWord?.tr[s.lang] ?? "");
   const speak = useSpeak(s.accent);
   return (<div><Header title={item.w} back={back} /><div className="space-y-4 px-5 text-center">
     <div className="rounded-[2rem] bg-card p-8 shadow-soft"><div className="flex min-h-32 items-center justify-center"><span className="text-9xl leading-none" role="img" aria-label={item.pos}>{icon}</span></div></div>
     <div className="flex justify-center gap-3"><SpeakBtn s={s} text={item.w} /><button onClick={() => toggleFav("frequency-" + item.r)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={"h-5 w-5 " + (fav ? "fill-accent text-accent" : "")} /></button></div>
     <p className="text-sm text-muted-foreground">{item.pos}{item.ipa ? " · " + item.ipa : ""}</p>
-    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={() => speak(example)} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{exampleTranslation && <p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
+    {example && <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={() => speak(example)} className="italic">“{example}” <Volume2 className="inline h-4 w-4" /></button>{<p className="mt-1 text-sm not-italic text-muted-foreground">{exampleTranslation}</p>}</div>}
     <div className="grid grid-cols-2 gap-2 text-left">
       {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
         const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
@@ -490,12 +492,12 @@ function WordDetail({ s, id, back }: { s: State; id: string; back: () => void })
         <p className="text-sm text-muted-foreground">{w.pos} · {w.level} · {cat.icon} {cat.name}</p>
         <button onClick={() => speak(w.example)} className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button>
         <div className="grid grid-cols-2 gap-2 text-left">
-          {(["pt-BR", "es", "fr", "it"] as const).map((language) => {
+          {([...new Set<Lang>([s.lang, "pt-BR", "es", "fr", "it"])]).map((language) => {
             const labels = { "pt-BR": "Português (Brasil)", es: "Español", fr: "Français", it: "Italiano" };
             const translation = w.tr[language]?.trim() || "";
             return <div key={language} className={`rounded-xl p-3 ${language === s.lang ? "bg-secondary" : "bg-card"}`}>
               <p className="text-xs text-muted-foreground">{labels[language]}</p>
-              <p className="font-semibold">{translation || "Tradução em preparação"}</p>
+              <p className="font-semibold"><TranslationText text={w.word} lang={language} fallback={translation} /></p>
             </div>;
           })}
         </div>
