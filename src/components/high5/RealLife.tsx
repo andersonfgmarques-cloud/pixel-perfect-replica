@@ -17,7 +17,7 @@ const SCENES: Scene[] = [
     emoji: "☕", setting: "A cosy coffee shop", gradient: "from-amber-950 via-orange-900 to-stone-950",
     lines: [
       { speaker: "BARISTA", en: "Good morning! What can I get you?", ipa: "/ɡʊd ˈmɔːnɪŋ | wɒt kən aɪ ɡet juː/", translations: { "pt-BR": "Bom dia! O que vai querer?", es: "¡Buenos días! ¿Qué le pongo?", fr: "Bonjour ! Que puis-je vous servir ?", it: "Buongiorno! Cosa posso servirle?" } },
-      { speaker: "YOU", en: "A latte, please.", ipa: "/ə ˈlɑːteɪ pliːz/", translations: { "pt-BR": "Um café com leite, por favor.", es: "Un café latte, por favor.", fr: "Un café latte, s'il vous plaît.", it: "Un latte, per favore." } },
+      { speaker: "YOU", en: "A coffee with milk, please.", ipa: "/ə ˈkɒfi wɪð mɪlk pliːz/", translations: { "pt-BR": "Um café com leite, por favor.", es: "Un café con leche, por favor.", fr: "Un café au lait, s'il vous plaît.", it: "Un caffè con latte, per favore." } },
       { speaker: "BARISTA", en: "Sure. Anything else?", ipa: "/ʃɔː | ˈeniθɪŋ els/", translations: { "pt-BR": "Claro. Mais alguma coisa?", es: "Claro. ¿Algo más?", fr: "Bien sûr. Autre chose ?", it: "Certo. Altro?" } },
       { speaker: "YOU", en: "That's all, thanks.", ipa: "/ðæts ɔːl | θæŋks/", translations: { "pt-BR": "Só isso, obrigado.", es: "Eso es todo, gracias.", fr: "Ce sera tout, merci.", it: "Tutto qui, grazie." } }
     ],
