@@ -1,0 +1,15 @@
+{
+  "name": "High5 Vocabulary",
+  "short_name": "High5",
+  "description": "Learn 10 new English words a day with pictures, audio and spaced repetition.",
+  "start_url": "./",
+  "id": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f8f4ea",
+  "theme_color": "#1f8a8a",
+  "icons": [
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
