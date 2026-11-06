@@ -277,7 +277,7 @@ function Choice({ s, w, m, onDone }: { s: State; w: Word; m: Mode; onDone: (ok: 
   return (
     <>
       {m === "choice" && <><p className="font-semibold text-muted-foreground">What is this?</p><div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-8xl" /></div><div className="flex items-center gap-2"><SpeakBtn s={s} text={w.word} /><PronunciationHint word={w.word} /></div><p className="text-sm text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p></>}
-      {m === "listen" && <><p className="font-semibold text-muted-foreground">Listen and choose</p><SpeakBtn s={s} text={w.word} big /><PronunciationHint word={w.word} /></>}
+      {m === "listen" && <><p className="font-semibold text-muted-foreground">Listen and choose</p><SpeakBtn s={s} text={w.word} big /><PronunciationHint word={w.word} /><p className="text-sm text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p></>}
       {m === "translate" && <><p className="font-semibold text-muted-foreground">Which word means…</p><h2 className="text-3xl font-extrabold text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></h2></>}
       <div className={`grid w-full gap-3 ${m === "listen" ? "grid-cols-2" : "grid-cols-1"}`}>
         {opts.map((o) => {
@@ -335,6 +335,16 @@ function Memory({ s, done }: { s: State; done: () => void }) {
           <button key={c.k} onClick={() => flip(n)} className={`flex aspect-square items-center justify-center rounded-2xl p-2 font-display font-bold transition ${show ? found.includes(c.id) ? "bg-success/20" : "bg-card shadow-soft" : "bg-hero text-primary-foreground"}`}>
             {show ? <span className={c.t.length <= 4 ? "text-4xl" : "text-base"}>{c.t}</span> : "?"}</button>); })}
       </div>
+      {found.length > 0 && <div className="space-y-2 px-5 pt-4">
+        <p className="text-sm font-semibold text-muted-foreground">Matched words · {LANG_NAMES[s.lang]}</p>
+        {found.map((id) => {
+          const word = wordById(id)!;
+          return <div key={id} className="flex items-center justify-between rounded-xl bg-card p-3 text-sm">
+            <span className="font-semibold">{word.word}</span>
+            <span className="text-muted-foreground"><TranslationText text={word.word} lang={s.lang} fallback={word.tr[s.lang]} /></span>
+          </div>;
+        })}
+      </div>}
       {win && <div className="p-5 text-center animate-pop"><p className="text-2xl font-extrabold">🎉 Solved in {moves} moves!</p><Btn className="mt-3 w-full" onClick={done}>Back to games</Btn></div>}
     </div>
   );
