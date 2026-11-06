@@ -21,8 +21,8 @@ const SCENES: Scene[] = [
       { speaker: "BARISTA", en: "Sure. Anything else?", ipa: "/ʃɔː | ˈeniθɪŋ els/", translations: { "pt-BR": "Claro. Mais alguma coisa?", es: "Claro. ¿Algo más?", fr: "Bien sûr. Autre chose ?", it: "Certo. Altro?" } },
       { speaker: "YOU", en: "That's all, thanks.", ipa: "/ðæts ɔːl | θæŋks/", translations: { "pt-BR": "Só isso, obrigado.", es: "Eso es todo, gracias.", fr: "Ce sera tout, merci.", it: "Tutto qui, grazie." } }
     ],
-    question: "What does the customer order?", options: ["A tea", "A latte", "A sandwich"], answer: 1,
-    explanation: "“A latte” é um café preparado com leite."
+    question: "What does the customer order?", options: ["A tea", "Coffee with milk", "A sandwich"], answer: 1,
+    explanation: "“Coffee with milk” significa “café com leite”.
   },
   {
     id: "directions", category: "Travel", title: "Asking for directions", level: "A1", duration: "40 sec",
@@ -204,7 +204,7 @@ const EXTRA_SCENES: Scene[] = [
 SCENES.push(...EXTRA_SCENES);
 
 
-export default function RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
+export default function TranslatedOption({ text, lang }: { text: string; lang: Lang }) {\n  const translated = useTranslation(text, lang);\n  return <>{translated}</>;\n}\n\nfunction RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
   const speak = useSpeak(accent);
   const [index, setIndex] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
@@ -215,7 +215,7 @@ export default function RealLife({ lang, accent, back }: { lang: Lang; accent: "
   const scene = SCENES[index];
   const line = scene.lines[lineIndex];
   const translatedQuestion = useTranslation(scene.question, lang);
-  const translatedExplanation = useTranslation(scene.explanation, lang);
+  const translatedExplanation = useTranslation(scene.explanation, lang);\n  const correctLabel = useTranslation("Correct! Great job.", lang);\n  const incorrectLabel = useTranslation("Not quite. Try to remember the dialogue.", lang);
   const translation = line.translations[lang] || "";
   const translatedLine = useTranslation(line.en, lang, translation);
   const progress = useMemo(() => Math.round(((lineIndex + 1) / scene.lines.length) * 100), [lineIndex, scene.lines.length]);
@@ -275,8 +275,8 @@ export default function RealLife({ lang, accent, back }: { lang: Lang; accent: "
             </> : <div className="rounded-2xl bg-black/60 p-4 backdrop-blur">
               <p className="text-xs font-bold uppercase tracking-widest text-amber-200">Quick check</p>
               <p className="mt-2 text-lg font-extrabold">{translatedQuestion}</p>
-              <div className="mt-4 space-y-2">{scene.options.map((option, i) => <button key={option} onClick={() => setChoice(i)} className={`w-full rounded-xl border p-3 text-left text-sm font-semibold ${choice === i ? "border-amber-300 bg-amber-300/20" : "border-white/20 bg-white/5"}`}>{option}</button>)}</div>
-              {choice !== null && <div className="mt-3 rounded-xl bg-white/10 p-3 text-sm"><p className="font-bold">{choice === scene.answer ? "Correct! Great job." : "Not quite. Try to remember the dialogue."}</p><p className="mt-1 text-white/75">{translatedExplanation}</p></div>}
+              <div className="mt-4 space-y-2">{scene.options.map((option, i) => <button key={option} onClick={() => setChoice(i)} className={`w-full rounded-xl border p-3 text-left text-sm font-semibold ${choice === i ? "border-amber-300 bg-amber-300/20" : "border-white/20 bg-white/5"}`}><TranslatedOption text={option} lang={lang} /></button>)}</div>
+              {choice !== null && <div className="mt-3 rounded-xl bg-white/10 p-3 text-sm"><p className="font-bold">{choice === scene.answer ? correctLabel : incorrectLabel}</p><p className="mt-1 text-white/75">{translatedExplanation}</p></div>}
               <button disabled={choice === null} onClick={finish} className="mt-4 w-full rounded-xl bg-amber-300 py-3 font-extrabold text-slate-950 disabled:opacity-40">Finish scene</button>
             </div>}
           </div>
