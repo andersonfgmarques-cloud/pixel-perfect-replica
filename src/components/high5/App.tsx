@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { Component, useEffect, useMemo, useState, type ErrorInfo, type ReactNode } from "react";
 import {
   Volume2, Home, BookOpen, Gamepad2, BarChart3, Heart, Mic, Check, X, Flame, Star, ArrowLeft, Search, Plus, Bell, RotateCcw, Video,
 } from "lucide-react";
@@ -30,7 +30,7 @@ export default function High5App() {
       {view.name === "words" && <WordsView s={s} go={go} />}
       {view.name === "games" && <GamesView s={s} go={go} />}
       {view.name === "progress" && <ProgressView s={s} />}
-      {view.name === "real-life" && <RealLife lang={s.lang} accent={s.accent} back={() => go({ name: "home" })} />}
+      {view.name === "real-life" && <RealLifeErrorBoundary><RealLife lang={s.lang} accent={s.accent} back={() => go({ name: "home" })} /></RealLifeErrorBoundary>}
       {view.name === "lesson" && <Lesson s={s} done={() => go({ name: "home" })} />}
       {view.name === "practice" && <Practice s={s} {...view} done={() => go({ name: view.review ? "home" : "games" })} />}
       {view.name === "memory" && <Memory s={s} done={() => go({ name: "games" })} />}
@@ -48,6 +48,32 @@ export default function High5App() {
       )}
     </div>
   );
+}
+
+class RealLifeErrorBoundary extends Component<{ children: ReactNode }, { error: string | null }> {
+  state = { error: null as string | null };
+
+  static getDerivedStateFromError(error: unknown) {
+    return { error: error instanceof Error ? error.message : String(error) };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error("[High5 Real Life render error]", error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <main className="min-h-screen bg-background px-6 py-12">
+          <h1 className="text-xl font-extrabold">Não foi possível abrir o Real Life</h1>
+          <p className="mt-3 text-sm text-muted-foreground">O restante do High5 continua disponível. Este é o detalhe técnico do erro:</p>
+          <pre className="mt-4 whitespace-pre-wrap break-words rounded-xl bg-muted p-4 text-xs">{this.state.error}</pre>
+          <button onClick={() => window.location.reload()} className="mt-5 rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground">Recarregar aplicativo</button>
+        </main>
+      );
+    }
+    return this.props.children;
+  }
 }
 
 /* ---------- shared ---------- */
