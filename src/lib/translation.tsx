@@ -20,9 +20,11 @@ function cacheKey(text: string, lang: Lang) {
 }
 
 /** Curated translations take priority; missing entries use the free MyMemory endpoint and are cached locally. */
-export function useTranslation(text: string, lang: Lang, fallback = "") {
-  const cleanText = text.trim();
-  const curated = fallback.trim();
+export function useTranslation(text: string | null | undefined, lang: Lang, fallback: string | null | undefined = "") {
+  // Data from older cached dictionaries may omit optional text fields. Never let
+  // an absent translation/example crash the entire route during React render.
+  const cleanText = typeof text === "string" ? text.trim() : "";
+  const curated = typeof fallback === "string" ? fallback.trim() : "";
   const [value, setValue] = useState(curated);
 
   useEffect(() => {
@@ -61,7 +63,7 @@ export function useTranslation(text: string, lang: Lang, fallback = "") {
 }
 
 export function TranslationText({ text, lang, fallback = "", className = "" }: {
-  text: string; lang: Lang; fallback?: string; className?: string;
+  text: string | null | undefined; lang: Lang; fallback?: string | null; className?: string;
 }) {
   const value = useTranslation(text, lang, fallback);
   return <span className={className}>{value}</span>;
