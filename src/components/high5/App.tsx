@@ -471,7 +471,7 @@ function FrequencyWordDetail({ s, item, back }: { s: State; item: FrequencyWord;
   const icon = kind.includes("pronoun") ? "👤" : kind.includes("verb") ? "⚡" : kind.includes("noun") ? "📘" : kind.includes("adjective") ? "🎨" : kind.includes("adverb") ? "💬" : kind.includes("preposition") ? "📍" : kind.includes("article") || kind.includes("determiner") ? "🔤" : "📖";
   const knownWord = WORDS.find((word) => word.word.toLowerCase() === item.w.toLowerCase());
   const translations = FREQUENCY_TRANSLATIONS[item.r] ?? {};
-  const example = item.w.toLowerCase() === "you" ? "Can I help you?" : item.example;
+  const example = item.w.toLowerCase() === "you" ? "Can I help you?" : (item.example ?? "");
   const exampleTranslation = useTranslation(example, s.lang, translations[s.lang]?.example ?? "");
   const selectedTranslation = useTranslation(item.w, s.lang, translations[s.lang]?.meaning ?? knownWord?.tr[s.lang] ?? "");
   const speak = useSpeak(s.accent);
