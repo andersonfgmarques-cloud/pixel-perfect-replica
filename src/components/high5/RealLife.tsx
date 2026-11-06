@@ -22,7 +22,7 @@ const SCENES: Scene[] = [
       { speaker: "YOU", en: "That's all, thanks.", ipa: "/ðæts ɔːl | θæŋks/", translations: { "pt-BR": "Só isso, obrigado.", es: "Eso es todo, gracias.", fr: "Ce sera tout, merci.", it: "Tutto qui, grazie." } }
     ],
     question: "What does the customer order?", options: ["A tea", "Coffee with milk", "A sandwich"], answer: 1,
-    explanation: "“Coffee with milk” significa “café com leite”.
+    explanation: "“Coffee with milk” significa “café com leite”.",
   },
   {
     id: "directions", category: "Travel", title: "Asking for directions", level: "A1", duration: "40 sec",
