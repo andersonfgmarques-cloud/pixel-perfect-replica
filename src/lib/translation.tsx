@@ -66,3 +66,37 @@ export function TranslationText({ text, lang, fallback = "", className = "" }: {
   const value = useTranslation(text, lang, fallback);
   return <span className={className}>{value}</span>;
 }
+
+type PronunciationEntry = { w: string; ipa?: string };
+let pronunciationIndex: Promise<Map<string, string>> | null = null;
+
+function loadPronunciationIndex() {
+  if (!pronunciationIndex) {
+    pronunciationIndex = fetch("/pixel-perfect-replica/data/english-top-5000.json")
+      .then((response) => {
+        if (!response.ok) throw new Error("Pronunciation dictionary unavailable");
+        return response.json();
+      })
+      .then((data: { items?: PronunciationEntry[] }) => new Map(
+        (data.items ?? []).filter((item) => item.ipa).map((item) => [item.w.toLowerCase(), item.ipa as string]),
+      ));
+  }
+  return pronunciationIndex;
+}
+
+export function useIpa(word: string) {
+  const [ipa, setIpa] = useState("");
+  useEffect(() => {
+    let active = true;
+    loadPronunciationIndex()
+      .then((index) => { if (active) setIpa(index.get(word.toLowerCase()) ?? ""); })
+      .catch(() => { if (active) setIpa(""); });
+    return () => { active = false; };
+  }, [word]);
+  return ipa;
+}
+
+export function PronunciationHint({ word }: { word: string }) {
+  const ipa = useIpa(word);
+  return ipa ? <span className="text-sm text-muted-foreground">/{ipa}/</span> : null;
+}
