@@ -109,13 +109,37 @@ export const isHard = (c?: Card) => !!c && c.wrong > c.correct;
 
 export function useSpeak(accent: string) {
   return useCallback((text: string, rate = 0.9) => {
-    if (!("speechSynthesis" in window)) return;
-    speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = accent; u.rate = rate;
-    const v = speechSynthesis.getVoices().find((v) => v.lang.replace("_", "-") === accent);
-    if (v) u.voice = v;
-    speechSynthesis.speak(u);
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || !text.trim()) return;
+    const synth = window.speechSynthesis;
+    synth.cancel();
+
+    const speakWithAvailableVoice = () => {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = accent;
+      utterance.rate = rate;
+      const voices = synth.getVoices();
+      const normalizedAccent = accent.toLowerCase().replace("_", "-");
+      const baseLanguage = normalizedAccent.split("-")[0];
+      const voice = voices.find((item) => item.lang.toLowerCase().replace("_", "-") === normalizedAccent)
+        ?? voices.find((item) => item.lang.toLowerCase().replace("_", "-").startsWith(baseLanguage + "-"))
+        ?? voices.find((item) => item.lang.toLowerCase().startsWith(baseLanguage));
+      if (voice) utterance.voice = voice;
+      synth.speak(utterance);
+    };
+
+    if (synth.getVoices().length) {
+      speakWithAvailableVoice();
+    } else {
+      const onVoicesChanged = () => {
+        synth.removeEventListener("voiceschanged", onVoicesChanged);
+        speakWithAvailableVoice();
+      };
+      synth.addEventListener("voiceschanged", onVoicesChanged);
+      window.setTimeout(() => {
+        synth.removeEventListener("voiceschanged", onVoicesChanged);
+        if (!synth.speaking) speakWithAvailableVoice();
+      }, 1000);
+    }
   }, [accent]);
 }
 
