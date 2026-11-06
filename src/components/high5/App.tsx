@@ -4,7 +4,7 @@ import {
 } from "lucide-react";
 import { WORDS, CATEGORIES, LANGS, LANG_NAMES, LEVEL_ORDER, wordById, type Word, type Level, type Lang } from "@/lib/words";
 import { FREQUENCY_TRANSLATIONS } from "@/lib/frequency-translations";
-import { TranslationText, useTranslation } from "@/lib/translation";
+import { TranslationText, PronunciationHint, useTranslation } from "@/lib/translation";
 import {
   useStore, setState, DAILY_LIMIT, dueWords, suggestNew, remainingToday, markLearned, recordResult, bumpStreak,
   toggleFav, isHard, useSpeak, shuffle, type State,
@@ -186,7 +186,7 @@ function Lesson({ s, done }: { s: State; done: () => void }) {
       <div key={w.id + phase} className="flex flex-1 flex-col items-center gap-4 px-5 py-8 text-center animate-pop">
         <div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-9xl" /></div>
         {phase === "see" && <>
-          <div className="flex items-center gap-3"><h2 className="text-4xl font-extrabold">{w.word}</h2><SpeakBtn s={s} text={w.word} /></div>
+          <div className="flex flex-col items-center gap-1"><div className="flex items-center gap-3"><h2 className="text-4xl font-extrabold">{w.word}</h2><SpeakBtn s={s} text={w.word} /></div><PronunciationHint word={w.word} /></div>
           <p className="text-sm text-muted-foreground">{w.pos} · {w.level}</p>
           <p className="text-xl font-semibold text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p>
           <button onClick={() => speak(w.example)} className="rounded-2xl bg-muted px-4 py-3 italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button>
@@ -204,8 +204,8 @@ function TypeBox({ w, s, onDone }: { w: Word; s: State; onDone: (ok: boolean) =>
   const check = () => { const ok = v.trim().toLowerCase() === w.word.toLowerCase(); setRes(ok); setTimeout(() => onDone(ok), ok ? 700 : 1600); };
   return (
     <div className="w-full space-y-3">
-      <div className="flex items-center justify-center gap-2"><p className="font-semibold">Write the word</p><SpeakBtn s={s} text={w.word} /></div>
-      <p className="text-sm text-muted-foreground"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /> · {w.word.length} letters</p>
+      <div className="flex items-center justify-center gap-2"><p className="font-semibold">Write the word</p><SpeakBtn s={s} text={w.word} /></div><PronunciationHint word={w.word} />
+      <p className="text-sm text-muted-foreground"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /> · {w.word.length} letters</p><PronunciationHint word={w.word} />
       <input autoFocus value={v} onChange={(e) => setV(e.target.value)} onKeyDown={(e) => e.key === "Enter" && res === null && check()}
         autoCapitalize="none" autoCorrect="off" spellCheck={false}
         className={`w-full rounded-2xl border-2 bg-card p-4 text-center font-display text-2xl outline-none ${res === null ? "border-border focus:border-primary" : res ? "border-success" : "border-destructive"}`} />
@@ -231,7 +231,7 @@ function SpeakBox({ w, s, onDone }: { w: Word; s: State; onDone: (ok: boolean) =
   };
   return (
     <div className="w-full space-y-3">
-      <div className="flex items-center justify-center gap-2"><h2 className="text-3xl font-extrabold">{w.word}</h2><SpeakBtn s={s} text={w.word} /></div>
+      <div className="flex flex-col items-center gap-1"><div className="flex items-center justify-center gap-2"><h2 className="text-3xl font-extrabold">{w.word}</h2><SpeakBtn s={s} text={w.word} /></div><PronunciationHint word={w.word} /></div>
       <p className="text-muted-foreground">Say it out loud (optional)</p>
       <button onClick={listen} aria-label="Speak" className="mx-auto block rounded-full bg-sun p-6 text-accent-foreground shadow-soft"><Mic className="h-10 w-10" /></button>
       <p className={`min-h-6 font-semibold ${ok ? "text-success" : ok === false ? "text-destructive" : ""}`}>{msg}</p>
@@ -276,8 +276,8 @@ function Choice({ s, w, m, onDone }: { s: State; w: Word; m: Mode; onDone: (ok: 
   const choose = (o: Word) => { if (pick) return; setPick(o.id); speak(w.word); setTimeout(() => onDone(o.id === w.id), 1100); };
   return (
     <>
-      {m === "choice" && <><p className="font-semibold text-muted-foreground">What is this?</p><div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-8xl" /></div></>}
-      {m === "listen" && <><p className="font-semibold text-muted-foreground">Listen and choose</p><SpeakBtn s={s} text={w.word} big /></>}
+      {m === "choice" && <><p className="font-semibold text-muted-foreground">What is this?</p><div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-8xl" /></div><div className="flex items-center gap-2"><SpeakBtn s={s} text={w.word} /><PronunciationHint word={w.word} /></div><p className="text-sm text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></p></>}
+      {m === "listen" && <><p className="font-semibold text-muted-foreground">Listen and choose</p><SpeakBtn s={s} text={w.word} big /><PronunciationHint word={w.word} /></>}
       {m === "translate" && <><p className="font-semibold text-muted-foreground">Which word means…</p><h2 className="text-3xl font-extrabold text-primary"><TranslationText text={w.word} lang={s.lang} fallback={w.tr[s.lang]} /></h2></>}
       <div className={`grid w-full gap-3 ${m === "listen" ? "grid-cols-2" : "grid-cols-1"}`}>
         {opts.map((o) => {
@@ -490,10 +490,10 @@ function WordDetail({ s, id, back }: { s: State; id: string; back: () => void })
     <div><Header title={w.word} back={back} />
       <div className="space-y-4 px-5 text-center">
         <div className="rounded-[2rem] bg-card p-8 shadow-soft"><Pic w={w} size="text-9xl" /></div>
-        <div className="flex justify-center gap-3"><SpeakBtn s={s} text={w.word} />
-          <button onClick={() => toggleFav(id)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={`h-5 w-5 ${fav ? "fill-accent text-accent" : ""}`} /></button></div>
+        <div className="flex flex-col items-center gap-2"><div className="flex justify-center gap-3"><SpeakBtn s={s} text={w.word} />
+          <button onClick={() => toggleFav(id)} aria-label="Favorite" className="rounded-full bg-secondary p-2.5"><Heart className={`h-5 w-5 ${fav ? "fill-accent text-accent" : ""}`} /></button></div><PronunciationHint word={w.word} /></div>
         <p className="text-sm text-muted-foreground">{w.pos} · {w.level} · {cat.icon} {cat.name}</p>
-        <button onClick={() => speak(w.example)} className="w-full rounded-2xl bg-muted px-4 py-3 italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button>
+        <div className="w-full rounded-2xl bg-muted px-4 py-3"><button onClick={() => speak(w.example)} className="italic">“{w.example}” <Volume2 className="inline h-4 w-4" /></button><p className="mt-1 text-sm text-muted-foreground"><TranslationText text={w.example} lang={s.lang} /></p></div>
         <div className="grid grid-cols-2 gap-2 text-left">
           {([...new Set<Lang>([s.lang, "pt-BR", "es", "fr", "it"])]).map((language) => {
             const translation = w.tr[language]?.trim() || "";
