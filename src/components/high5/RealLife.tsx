@@ -204,12 +204,12 @@ const EXTRA_SCENES: Scene[] = [
 SCENES.push(...EXTRA_SCENES);
 
 
-export default function TranslatedOption({ text, lang }: { text: string; lang: Lang }) {
+function TranslatedOption({ text, lang }: { text: string; lang: Lang }) {
   const translated = useTranslation(text, lang);
   return <>{translated}</>;
 }
 
-function RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
+export default function RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
   const speak = useSpeak(accent);
   const [index, setIndex] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
