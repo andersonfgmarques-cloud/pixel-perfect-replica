@@ -204,7 +204,12 @@ const EXTRA_SCENES: Scene[] = [
 SCENES.push(...EXTRA_SCENES);
 
 
-export default function TranslatedOption({ text, lang }: { text: string; lang: Lang }) {\n  const translated = useTranslation(text, lang);\n  return <>{translated}</>;\n}\n\nfunction RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
+export default function TranslatedOption({ text, lang }: { text: string; lang: Lang }) {
+  const translated = useTranslation(text, lang);
+  return <>{translated}</>;
+}
+
+function RealLife({ lang, accent, back }: { lang: Lang; accent: "en-GB" | "en-US"; back: () => void }) {
   const speak = useSpeak(accent);
   const [index, setIndex] = useState(0);
   const [lineIndex, setLineIndex] = useState(0);
@@ -215,7 +220,9 @@ export default function TranslatedOption({ text, lang }: { text: string; lang: L
   const scene = SCENES[index];
   const line = scene.lines[lineIndex];
   const translatedQuestion = useTranslation(scene.question, lang);
-  const translatedExplanation = useTranslation(scene.explanation, lang);\n  const correctLabel = useTranslation("Correct! Great job.", lang);\n  const incorrectLabel = useTranslation("Not quite. Try to remember the dialogue.", lang);
+  const translatedExplanation = useTranslation(scene.explanation, lang);
+  const correctLabel = useTranslation("Correct! Great job.", lang);
+  const incorrectLabel = useTranslation("Not quite. Try to remember the dialogue.", lang);
   const translation = line.translations[lang] || "";
   const translatedLine = useTranslation(line.en, lang, translation);
   const progress = useMemo(() => Math.round(((lineIndex + 1) / scene.lines.length) * 100), [lineIndex, scene.lines.length]);
