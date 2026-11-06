@@ -109,7 +109,7 @@ export const isHard = (c?: Card) => !!c && c.wrong > c.correct;
 
 export function useSpeak(accent: string) {
   return useCallback((text: string, rate = 0.9) => {
-    if (typeof window === "undefined" || !("speechSynthesis" in window) || !text.trim()) return;
+    if (typeof window === "undefined" || !("speechSynthesis" in window) || typeof text !== "string" || !text.trim()) return;
     const synth = window.speechSynthesis;
     synth.cancel();
 
